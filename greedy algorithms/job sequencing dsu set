@@ -1,0 +1,8 @@
+## Pattern Name: [e.g., Greedy + DSU for Slot Allocation]
+
+* **When to use:** $O(N^2)$ array scanning for slot/resource reservation gives TLE ($N \ge 10^5$).
+* **Key Trick:** `parent[x]` stores the next available free slot. `find(x)` jumps to it in $O(1)$.
+* **Common Pitfalls:** 
+  - 1-based indexing vs 0-based sizing (`maxDeadline + 1`).
+  - Forgetting path compression in `find()`.
+* **Template Code:** [Paste the short, clean C++ snippet]
