@@ -1,0 +1,78 @@
+# 🍬 LeetCode 135: Candy (Slope / Peak & Valley Pattern)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Difficulty** | Hard |
+| **Pattern** | Greedy (Slope / Peak & Valley Traversal) |
+| **Time Complexity** | $\mathcal{O}(N)$ — Single linear pass |
+| **Space Complexity** | $\mathcal{O}(1)$ — Zero extra memory allocated |
+
+---
+
+> [!NOTE]
+> **Why do we need the $O(1)$ Slope Approach?**
+> The standard Two-Pass Greedy approach requires an extra $O(N)$ vector to store candy counts. By visualizing the ratings array as a continuous **mountain landscape** (up-slopes, down-slopes, and flat plateaus), we can count the exact total candies on the fly in a single pass without storing anything in memory.
+
+---
+
+## 🧠 The Core Concept & Intuition
+
+Think of the children's ratings as elevations on a hiking trail:
+
+```text
+               Peak (Peak Height = 4)
+                /\
+               /  \
+              /    \
+  (Peak = 2) /      \
+            /\       \  Flat Plateau (Reset to 1)
+           /  \       \________
+__________/    \       
+ Up-Slope      Down-Slope (Valley)
+
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int candy(std::vector<int>& ratings) {
+        const int n = ratings.size();
+        if (n <= 1) return n;
+
+        int sum = 1; // First child gets at least 1 candy
+        int i = 1;
+
+        while (i < n) {
+            // Case 1: Flat Plateau (Equal ratings)
+            if (ratings[i] == ratings[i - 1]) {
+                sum += 1;
+                i++;
+                continue;
+            }
+
+            // Case 2: Up-Slope (Uphill climb)
+            int peak = 1;
+            while (i < n && ratings[i] > ratings[i - 1]) {
+                peak++;
+                sum += peak;
+                i++;
+            }
+
+            // Case 3: Down-Slope (Downhill descent)
+            int down = 1;
+            while (i < n && ratings[i] < ratings[i - 1]) {
+                sum += down;
+                down++;
+                i++;
+            }
+
+            // Peak Correction: If the downhill descent is longer than the uphill climb
+            if (down > peak) {
+                sum += (down - peak);
+            }
+        }
+
+        return sum;
+    }
+};
+
