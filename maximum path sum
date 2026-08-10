@@ -1,0 +1,35 @@
+Problem OverviewFind the maximum path sum in a binary tree. A path is defined as any sequence of nodes from a starting node to any destination node along parent-child connections. A node can only appear in the path at most once, and the path does not need to pass through the root.Intuition & Mental ModelThink bottom-up recursion (Post-Order Traversal: Left $\rightarrow$ Right $\rightarrow$ Root).The "Turning Point" Concept: At any node, the maximum path passing through it (using both its subtrees) is left_path_sum + right_path_sum + root->val.Branch Pruning (max(0, ...)): If a child subtree returns a negative sum, taking it will only decrease our total. Thus, we clamp negative contributions to 0 using max(0, branch_sum).Return Value to Parent: A parent node can only pick one branch (either left or right) to continue the path upward. Hence, we return root->val + max(left_sum, right_sum).Optimal ApproachInitialize a global reference variable maxi to INT_MIN.Base Case: If root == nullptr, return 0.Recurse Left & Right: Calculate maximum branch sums for left and right children, clamped to 0 if negative:$$\text{left} = \max(0, \text{maxPath}(\text{root->left}))$$$$\text{right} = \max(0, \text{maxPath}(\text{root->right}))$$Update Path Sum: Update maxi with the full path passing through the current node:$$\text{maxi} = \max(\text{maxi}, \text{left} + \text{right} + \text{root->val})$$Return Upward: Return the maximum single branch sum extending upward to the parent:$$\text{return } \text{root->val} + \max(\text{left}, \text{right})$$C++ CodeC++class Solution {
+private:
+    int maxPath(TreeNode* root, int& maxi) {
+        if (root == nullptr) return 0;
+
+        // Ignore negative paths by taking max(0, ...)
+        int left = max(0, maxPath(root->left, maxi));
+        int right = max(0, maxPath(root->right, maxi));
+
+        // Update maximum path sum using current node as turning point
+        maxi = max(maxi, left + right + root->val);
+
+        // Return max single branch contribution to parent
+        return root->val + max(left, right);
+    }
+
+public:
+    int maxPathSum(TreeNode* root) {
+        int maxi = INT_MIN;
+        maxPath(root, maxi);
+        return maxi;
+    }
+};
+ComplexityTime Complexity: $O(N)$ — Every node is visited exactly once in a post-order traversal.Space Complexity: $O(H)$ — Call stack space ($O(\log N)$ for balanced trees, $O(N)$ for skewed trees).💡 The Universal Post-Order TemplateAll 3 problems share the exact same structural skeleton:Plaintext               Post-Order Traversal Framework
+                            │
+       ┌────────────────────┼────────────────────┐
+       ▼                    ▼                    ▼
+  Max Depth             Diameter          Max Path Sum
+ (LeetCode 104)      (LeetCode 543)      (LeetCode 124)
+       │                    │                    │
+       ├─ Return 1+max      ├─ maxi = max(       ├─ left = max(0, recurse)
+       │                    │    maxi, lh+rh)    │  right = max(0, recurse)
+       └─ Base: 0           │                    ├─ maxi = max(
+                            └─ Return 1+max         maxi, left+right+val)
+                                                 └─ Return val+max
