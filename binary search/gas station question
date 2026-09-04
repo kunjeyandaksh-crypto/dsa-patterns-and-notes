@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int numberofGasStations(long double dist, vector<int>& stations) {
+        int cnt = 0;
+        for (int i = 1; i < stations.size(); i++) {
+            long double gap = stations[i] - stations[i - 1];
+            int numberinbetween = gap / dist;
+            if (gap == numberinbetween * dist) {
+                numberinbetween--;
+            }
+            cnt += numberinbetween;
+        }
+        return cnt;
+    }
+
+    double minMaxDist(vector<int>& stations, int k) {
+        long double low = 0;
+        long double high = 0;
+
+        for (int i = 0; i < stations.size() - 1; i++) {
+            high = max(high, (long double)(stations[i + 1] - stations[i]));
+        }
+
+        long double diff = 1e-6;
+        while (high - low > diff) {
+            long double mid = (low + high) / 2.0;
+            int cnt = numberofGasStations(mid, stations);
+
+            if (cnt > k) {
+                low = mid; 
+            } else {
+                high = mid;
+            }
+        }
+
+        return high;
+    }
+};
